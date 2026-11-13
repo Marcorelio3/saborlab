@@ -40,7 +40,9 @@ Sem as variáveis de ambiente, o site mostra uma tela de configuração em vez d
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
 2. No **SQL Editor**, cole e execute o conteúdo de [`supabase/schema.sql`](supabase/schema.sql).
-   Opcional: execute também [`supabase/seed.sql`](supabase/seed.sql) para começar com 3 materiais.
+   Opcional: execute também [`supabase/seed.sql`](supabase/seed.sql) para começar com
+   20 materiais e 8 atividades. Os exemplos ficam vinculados à conta que entrou por
+   último no site (rode o seed depois do primeiro login).
 3. Em **Authentication → URL Configuration** (opcional, só para links de e-mail):
    - **Site URL**: `https://<usuario>.github.io/saborlab/`
    - **Additional Redirect URLs**: `http://localhost:5173/` e o endereço do GitHub Pages
@@ -105,8 +107,13 @@ Para remover um conteúdo:
 update reports set resolved = true where target_id = '<id-do-item>';
 ```
 
-Itens criados pelo `seed.sql` não têm `created_by` (foram inseridos pelo SQL Editor),
-então não exibem o botão "Excluir" para usuários. Remova-os pelo painel.
+O `seed.sql` vincula os exemplos à conta que entrou por último no site, então eles
+aparecem com o botão "Excluir" para esse usuário. Se precisar trocar o dono, rode:
+
+```sql
+update materials set created_by = '<uuid-do-novo-dono>' where author_name = 'Equipe SaborLab';
+update layouts   set created_by = '<uuid-do-novo-dono>' where author_name = 'Equipe SaborLab';
+```
 
 ## Limites conhecidos
 

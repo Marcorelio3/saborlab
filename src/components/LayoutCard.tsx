@@ -12,25 +12,39 @@ interface Props {
 export function LayoutCard({ layout, session, onDuplicate, onReport, onDelete }: Props) {
   const isAuthor = Boolean(session && layout.created_by === session.user.id)
   const count = layout.data?.blocks?.length ?? 0
+  const textBlocks = layout.data?.blocks?.filter((block) => block.type === 'text') ?? []
+  const excerpt = textBlocks.reduce((best, block) => {
+    if (block.type !== 'text') return best
+    const text = block.html
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&[a-z]+;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    return text.length > best.length ? text : best
+  }, '')
 
   return (
     <article className="card">
       <div className="card-preview layout-preview">
-        <div className="paper-icon" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-        <p className="layout-count">
-          {count} {count === 1 ? 'bloco' : 'blocos'} na folha A4
-        </p>
+        {excerpt ? (
+          <p className="text-preview">{excerpt}</p>
+        ) : (
+          <div className="paper-icon" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+        )}
         <span className="kind-tag">Atividade</span>
       </div>
 
       <div className="card-body">
         <div className="card-topline">
           <span className="badge">{layout.subject}</span>
-          <span className="muted small">A4</span>
+          <span className="muted small">
+            {count} {count === 1 ? 'bloco' : 'blocos'} · A4
+          </span>
         </div>
         <h3>{layout.title}</h3>
         {layout.author_name ? (

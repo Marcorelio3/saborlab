@@ -128,7 +128,7 @@ export function Catalog({ session }: Props) {
           <p className="eyebrow">Biblioteca colaborativa</p>
           <h1>
             Materiais prontos,<br />
-            atividades para imprimir.
+            atividades para <em>imprimir</em>.
           </h1>
           <p className="hero-text">
             Textos e imagens compartilhados por professores. Monte a folha A4, ajuste os
@@ -142,6 +142,13 @@ export function Catalog({ session }: Props) {
               Criar atividade
             </Link>
           </div>
+          <p className="hero-stats">
+            <strong>{materials.length}</strong> materiais
+            <span className="dot" aria-hidden="true" />
+            <strong>{layouts.length}</strong> atividades
+            <span className="dot" aria-hidden="true" />
+            <strong>{SUBJECTS.length}</strong> matérias
+          </p>
         </div>
         <div className="hero-art" aria-hidden="true">
           <div className="hero-sheet">
@@ -152,6 +159,7 @@ export function Catalog({ session }: Props) {
             <span className="hero-sheet-line" />
             <span className="hero-sheet-line short" />
           </div>
+          <span className="hero-note">1 folha A4 · pronto para imprimir</span>
         </div>
       </section>
 
@@ -168,16 +176,29 @@ export function Catalog({ session }: Props) {
                 onChange={(event) => setQuery(event.target.value)}
               />
             </label>
-            <label className="select-field">
-              <span className="sr-only">Filtrar por matéria</span>
-              <select value={subject} onChange={(event) => setSubject(event.target.value)}>
-                <option value="">Todas as matérias</option>
-                {SUBJECTS.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
-            </label>
           </div>
+        </div>
+
+        <div className="subject-chips" role="group" aria-label="Filtrar por matéria">
+          <button
+            type="button"
+            className={subject === '' ? 'subject-chip is-active' : 'subject-chip'}
+            aria-pressed={subject === ''}
+            onClick={() => setSubject('')}
+          >
+            Todas
+          </button>
+          {SUBJECTS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={subject === item ? 'subject-chip is-active' : 'subject-chip'}
+              aria-pressed={subject === item}
+              onClick={() => setSubject(item)}
+            >
+              {item}
+            </button>
+          ))}
         </div>
 
         <div className="tabs" role="tablist" aria-label="Tipo de conteúdo">
