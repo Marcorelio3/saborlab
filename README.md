@@ -41,13 +41,21 @@ Sem as variáveis de ambiente, o site mostra uma tela de configuração em vez d
 1. Crie um projeto em [supabase.com](https://supabase.com).
 2. No **SQL Editor**, cole e execute o conteúdo de [`supabase/schema.sql`](supabase/schema.sql).
    Opcional: execute também [`supabase/seed.sql`](supabase/seed.sql) para começar com 3 materiais.
-3. Em **Authentication → URL Configuration**:
+3. Em **Authentication → URL Configuration** (opcional, só para links de e-mail):
    - **Site URL**: `https://<usuario>.github.io/saborlab/`
    - **Additional Redirect URLs**: `http://localhost:5173/` e o endereço do GitHub Pages
      (os dois com barra no final).
 4. Em **Project Settings → API**, copie:
    - **Project URL**
    - **anon public key** (ou **publishable key**)
+5. Em **Authentication → Emails → Templates → Magic Link**, troque o corpo para exibir o
+   código de 6 dígitos (o login do app usa o código, não o link):
+   ```html
+   <h2>Código de acesso ao SaborLab</h2>
+   <p>Use este código para entrar. Ele expira em 1 hora.</p>
+   <p style="font-size: 32px; font-weight: bold; letter-spacing: 6px;">{{ .Token }}</p>
+   <p>Se você não pediu este código, ignore este e-mail.</p>
+   ```
 
 Nunca coloque a chave `service_role` no frontend. A chave `anon` é pública por design;
 as políticas de RLS protegem os dados.
@@ -106,8 +114,8 @@ então não exibem o botão "Excluir" para usuários. Remova-os pelo painel.
 - Sem zoom no editor (a folha rola em telas pequenas).
 - Atividade publicada não é editada no site: duplique e publique uma nova versão.
 - Fotos de alunos e rostos de crianças são proibidos pelos termos.
-- O SMTP embutido do Supabase tem limite baixo de e-mails por hora; serve para testes,
-  não para divulgação em massa.
+- O SMTP embutido do Supabase tem limite baixo de e-mails por hora. Para uso real, configure
+  SMTP próprio em **Authentication → Emails → SMTP Settings** (Gmail com senha de app ou Brevo).
 - Se um material com imagem for excluído, a imagem quebra nas atividades que a usam.
 - Rascunho fica só neste navegador (IndexedDB), não na conta.
 
