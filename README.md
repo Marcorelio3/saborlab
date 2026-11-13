@@ -1,0 +1,121 @@
+# SaborLab
+
+Biblioteca colaborativa de materiais escolares com editor de atividades em folha A4.
+Professores podem usar textos e imagens prontos, montar a folha, imprimir/salvar em PDF
+e publicar a atividade para outras pessoas reutilizarem.
+
+- Site: `https://<usuario>.github.io/saborlab/`
+- Idioma: português do Brasil
+- Leitura pública, sem login. Enviar, publicar e denunciar exigem entrar por link mágico.
+
+## Stack
+
+- Vite + React + TypeScript
+- Supabase (Postgres, Storage e Auth por link mágico, fluxo PKCE)
+- `react-rnd` para os blocos da folha A4, TipTap para o texto
+- `idb-keyval` para o rascunho local (IndexedDB)
+- CSS puro (um único arquivo), sem Tailwind
+- Testes com Vitest
+
+## Rodar localmente
+
+```bash
+npm install
+cp .env.example .env.local
+# edite .env.local com a URL e a chave anon do seu projeto Supabase
+npm run dev
+```
+
+O `npm run dev` abre em `http://localhost:5173`.
+
+```bash
+npm test          # testes unitários
+npm test -- --run # uma execução única
+npm run build     # build de produção em dist/
+```
+
+Sem as variáveis de ambiente, o site mostra uma tela de configuração em vez de quebrar.
+
+## Configurar o Supabase
+
+1. Crie um projeto em [supabase.com](https://supabase.com).
+2. No **SQL Editor**, cole e execute o conteúdo de [`supabase/schema.sql`](supabase/schema.sql).
+   Opcional: execute também [`supabase/seed.sql`](supabase/seed.sql) para começar com 3 materiais.
+3. Em **Authentication → URL Configuration**:
+   - **Site URL**: `https://<usuario>.github.io/saborlab/`
+   - **Additional Redirect URLs**: `http://localhost:5173/` e o endereço do GitHub Pages
+     (os dois com barra no final).
+4. Em **Project Settings → API**, copie:
+   - **Project URL**
+   - **anon public key** (ou **publishable key**)
+
+Nunca coloque a chave `service_role` no frontend. A chave `anon` é pública por design;
+as políticas de RLS protegem os dados.
+
+## Deploy no GitHub Pages
+
+O deploy roda por GitHub Actions em cada push na `main` (`.github/workflows/deploy.yml`).
+
+1. Crie um repositório público chamado `saborlab`.
+2. Configure os segredos do repositório:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `SUPABASE_URL` (mesmo valor da URL)
+   - `SUPABASE_ANON_KEY` (mesmo valor da chave anon)
+3. Em **Settings → Pages**, escolha **Source: GitHub Actions**.
+4. Faça push na `main` e acompanhe o workflow.
+
+O `base: './'` e o `HashRouter` permitem que o site funcione na subpasta `/saborlab/`
+sem configuração extra.
+
+## Keep-alive
+
+O plano grátis do Supabase pausa o projeto após cerca de 7 dias sem uso. O workflow
+`.github/workflows/keepalive.yml` consulta a API semanalmente (segunda, 06:00 UTC) e
+também pode ser disparado manualmente em **Actions → Keep Supabase alive → Run workflow**.
+
+## Moderação
+
+Não há painel de administração no site. A publicação é imediata e a remoção é feita no
+painel do Supabase, que usa a chave `service_role` e ignora as políticas de RLS.
+
+Denúncias abertas:
+
+```sql
+select * from reports where not resolved order by created_at desc;
+```
+
+Para remover um conteúdo:
+
+1. Encontre o item denunciado em `materials` ou `layouts`.
+2. Se for material com `image_path`, apague também o arquivo no bucket `materials`
+   (caminho `materials/<image_path>`).
+3. Apague a linha em `materials`/`layouts`.
+4. Marque a denúncia como resolvida:
+
+```sql
+update reports set resolved = true where target_id = '<id-do-item>';
+```
+
+Itens criados pelo `seed.sql` não têm `created_by` (foram inseridos pelo SQL Editor),
+então não exibem o botão "Excluir" para usuários. Remova-os pelo painel.
+
+## Limites conhecidos
+
+- Uma folha A4 por atividade.
+- Sem zoom no editor (a folha rola em telas pequenas).
+- Atividade publicada não é editada no site: duplique e publique uma nova versão.
+- Fotos de alunos e rostos de crianças são proibidos pelos termos.
+- O SMTP embutido do Supabase tem limite baixo de e-mails por hora; serve para testes,
+  não para divulgação em massa.
+- Se um material com imagem for excluído, a imagem quebra nas atividades que a usam.
+- Rascunho fica só neste navegador (IndexedDB), não na conta.
+
+## Licenças
+
+- Código: [MIT](LICENSE).
+- Conteúdo publicado pelos usuários: CC BY-SA 4.0, exceto itens em domínio público
+  indicados na fonte.
+
+Ao enviar um material, o usuário declara ter o direito de compartilhá-lo e aceita a
+licença CC BY-SA 4.0.

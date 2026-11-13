@@ -1,0 +1,21 @@
+name: Keep Supabase alive
+
+# O projeto grátis do Supabase pausa após ~7 dias sem uso.
+# O cron semanal mantém o projeto ativo. O GitHub desativa cron após 60 dias
+# sem atividade no repositório; qualquer push reativa o agendamento.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar a API REST
+        run: |
+          curl -fsS "$SUPABASE_URL/rest/v1/materials?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
