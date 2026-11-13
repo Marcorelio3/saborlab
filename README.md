@@ -6,12 +6,12 @@ e publicar a atividade para outras pessoas reutilizarem.
 
 - Site: `https://<usuario>.github.io/saborlab/`
 - Idioma: português do Brasil
-- Leitura pública, sem login. Enviar, publicar e denunciar exigem entrar por link mágico.
+- Leitura pública, sem login. Enviar, publicar e denunciar exigem entrar com um código enviado por e-mail.
 
 ## Stack
 
 - Vite + React + TypeScript
-- Supabase (Postgres, Storage e Auth por link mágico, fluxo PKCE)
+- Supabase (Postgres, Storage e Auth por código de 6 dígitos enviado por e-mail, fluxo PKCE)
 - `react-rnd` para os blocos da folha A4, TipTap para o texto
 - `idb-keyval` para o rascunho local (IndexedDB)
 - CSS puro (um único arquivo), sem Tailwind

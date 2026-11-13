@@ -876,6 +876,21 @@ textarea {
   font-size: clamp(1.7rem, 3.5vw, 2.3rem);
 }
 
+.code-input {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.login-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
 /* Terms */
 
 .terms-page {
